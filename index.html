@@ -19,6 +19,8 @@
     <!-- GSAP for Animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     
+    <!-- OGL dependencies will be loaded via ES modules in lightfall.js -->
+    
     <style>
         /* Define color palette and fonts from the invitation */
         :root {
@@ -33,13 +35,7 @@
 
         /* Base styles */
         body {
-            background-color: var(--cream);
-            background-image: 
-                radial-gradient(circle 50vmax at 10% 20%, rgba(241, 212, 212, 0.4), transparent),
-                radial-gradient(circle 40vmax at 90% 30%, rgba(241, 212, 212, 0.3), transparent),
-                radial-gradient(circle 60vmax at 50% 80%, rgba(241, 212, 212, 0.5), transparent);
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+            background-color: transparent;
             color: var(--dark-text);
             font-family: var(--font-sans);
             overflow-x: hidden;
@@ -143,6 +139,9 @@
 </head>
 <body class="antialiased selection:bg-gold selection:text-white">
 
+    <!-- Iridescence Background Container -->
+    <div id="iridescence-container" class="fixed inset-0 w-full h-full -z-10 pointer-events-none"></div>
+
     <!-- Envelope Animation Container -->
     <div id="envelope-container" class="fixed inset-0 z-[10000] bg-[#FFF5E4] flex flex-col items-center justify-center transition-opacity duration-1000">
         <!-- Bismillah Preloader -->
@@ -150,7 +149,7 @@
             <h1 class="bismillah-preloader font-arabic">بِسْمِ اللّٰهِ</h1>
         </div>
 
-        <div id="envelope-wrapper" class="relative w-full max-w-2xl mx-auto h-[100dvh] flex items-center justify-center opacity-0 transition-opacity duration-500 cursor-pointer">
+        <div id="envelope-wrapper" class="relative w-full h-[100dvh] flex items-center justify-center opacity-0 transition-opacity duration-500 cursor-pointer">
             <div id="frames-container" class="relative w-full h-full flex items-center justify-center">
                 <!-- Images will be injected here via JS -->
             </div>
@@ -161,13 +160,6 @@
         </div>
     </div>
 
-    <!-- Background Audio & Control -->
-    <audio id="background-audio" loop>
-        <source src="http://googleusercontent.com/file_content/1" type="audio/mpeg">
-    </audio>
-    <button id="audio-toggle" class="fixed bottom-5 right-5 z-50 bg-gold/80 text-white w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-sm cta-button transition-all duration-300">
-        <i id="audio-icon" class="fas fa-volume-off"></i>
-    </button>
     
     <!-- Main Content Wrapper -->
     <div id="main-content" class="opacity-0 transition-opacity duration-1000">
@@ -270,17 +262,18 @@
             const framesContainer = document.getElementById('frames-container');
             
             if (framesContainer) {
-                const frameCount = 9;
+                const frameCount = 17;
                 const images = [];
                 let loadedImages = 0;
 
-                const currentFrame = index => `convert_this_video_to_the__frames/convert_this_video_to_the__frames/frame_${(index + 1).toString().padStart(3, '0')}.jpg`;
+                const currentFrame = index => `WhatsApp_Video_2026-06-29_at_3_41_19_PM_frames/frame_${(index + 1).toString().padStart(3, '0')}.jpg`;
 
                 for (let i = 0; i < frameCount; i++) {
                     const img = new Image();
                     img.src = currentFrame(i);
-                    img.className = 'absolute w-full h-full object-contain';
+                    img.className = 'absolute w-full h-full object-cover';
                     img.style.opacity = i === 0 ? '1' : '0';
+                    img.style.transform = 'scale(1.35)';
                     framesContainer.appendChild(img);
                     images.push(img);
 
@@ -297,7 +290,7 @@
                                 frame: frameCount - 1,
                                 snap: "frame",
                                 ease: "none",
-                                duration: 1.5,
+                                duration: 1.8,
                                 paused: true,
                                 onUpdate: () => {
                                     const currentIdx = Math.round(animationState.frame);
@@ -306,23 +299,27 @@
                                     });
                                 },
                                 onComplete: () => {
-                                    envelopeContainer.style.opacity = '0';
-                                    setTimeout(() => {
-                                        envelopeContainer.style.display = 'none';
-                                        mainContent.style.opacity = '1';
-                                    }, 1000);
+                                    // Beautiful flow animation
+                                    gsap.to(framesContainer, {
+                                        scale: 1.15,
+                                        opacity: 0,
+                                        filter: "blur(10px)",
+                                        duration: 1.2,
+                                        ease: "power2.inOut",
+                                        onComplete: () => {
+                                            envelopeContainer.style.opacity = '0';
+                                            setTimeout(() => {
+                                                envelopeContainer.style.display = 'none';
+                                                mainContent.style.opacity = '1';
+                                            }, 800);
+                                        }
+                                    });
                                 }
                             });
 
                             envelopeWrapper.addEventListener("click", () => {
                                 document.getElementById('tap-instruction').style.opacity = '0';
                                 tween.play();
-                                
-                                const audioToggle = document.getElementById('audio-toggle');
-                                const audio = document.getElementById('background-audio');
-                                if (audio.paused) {
-                                    audioToggle.click();
-                                }
                             }, { once: true });
                         }
                     };
@@ -348,23 +345,6 @@
                 document.getElementById('minutes').innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
                 document.getElementById('seconds').innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
             }, 1000);
-
-            // --- 3. AUDIO CONTROL ---
-            const audio = document.getElementById('background-audio');
-            const audioToggle = document.getElementById('audio-toggle');
-            const audioIcon = document.getElementById('audio-icon');
-            let isPlaying = false;
-            
-            audioToggle.addEventListener('click', () => {
-                if (isPlaying) {
-                    audio.pause();
-                    audioIcon.className = 'fas fa-volume-off';
-                } else {
-                    audio.play().catch(error => console.error("Audio playback failed:", error));
-                    audioIcon.className = 'fas fa-volume-up';
-                }
-                isPlaying = !isPlaying;
-            });
 
             // --- 4. SCROLL REVEAL ANIMATIONS ---
             const revealElements = document.querySelectorAll('.reveal');
@@ -430,6 +410,6 @@
             }
         });
     </script>
-
+    <script src="iridescence.bundle.js"></script>
 </body>
 </html>
