@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Nikah of Hasheema & Nahzan | #BismillahToForever</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Lato:wght@300;400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <style>
+        /* Define color palette and fonts from the invitation */
+        :root {
+            --dusty-pink: #F1D4D4;
+            --cream: #FFF5E4;
+            --dark-text: #4F4A45;
+            --gold: #B4846C; /* A softer, more fitting gold */
+            --font-serif: 'Lora', serif;
+            --font-sans: 'Lato', sans-serif;
+            --font-arabic: 'Noto Naskh Arabic', serif;
+        }
+
+        /* Base styles */
+        body {
+            background-color: var(--cream);
+            background-image: 
+                radial-gradient(circle 50vmax at 10% 20%, rgba(241, 212, 212, 0.4), transparent),
+                radial-gradient(circle 40vmax at 90% 30%, rgba(241, 212, 212, 0.3), transparent),
+                radial-gradient(circle 60vmax at 50% 80%, rgba(241, 212, 212, 0.5), transparent);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--dark-text);
+            font-family: var(--font-sans);
+            overflow-x: hidden;
+        }
+        
+        /* Typography */
+        h1, h2, h3 { font-family: var(--font-serif); color: var(--dark-text); }
+        .text-gold { color: var(--gold); }
+        .bg-gold { background-color: var(--gold); }
+        .border-gold { border-color: var(--gold); }
+        .font-arabic { font-family: var(--font-arabic); }
+
+        /* Preloader */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--dusty-pink);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease-in-out;
+        }
+        #preloader.loaded {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .bismillah-preloader {
+            font-family: var(--font-arabic);
+            font-size: 3rem;
+            color: var(--dark-text);
+            animation: fadeInOut 4s ease-in-out infinite;
+        }
+
+        /* Hero Section Styling */
+        .hero-section {
+            position: relative;
+            background: transparent;
+        }
+
+        /* Countdown Timer */
+        .countdown-digit {
+            text-shadow: 0 0 5px rgba(79, 74, 69, 0.2);
+        }
+        
+        /* Background pattern for sections */
+        .pattern-bg {
+             background-color: rgba(255, 255, 255, 0.3);
+             backdrop-filter: blur(10px);
+        }
+
+        /* Scroll Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .reveal.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Central Card Design */
+        .main-card {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-top: -8rem; /* Pulls the card up into the hero section */
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.7);
+        }
+
+        /* Button Style */
+        .cta-button:hover {
+             transform: scale(1.05) translateY(-2px);
+             box-shadow: 0 8px 20px rgba(180, 132, 108, 0.3);
+        }
+        
+        /* Animated Couple SVG Illustration */
+        #couple-svg {
+            animation: gentleBob 5s ease-in-out infinite;
+            filter: drop-shadow(0px 5px 10px rgba(79, 74, 69, 0.1));
+            max-width: 280px;
+            width: 100%;
+            height: auto;
+        }
+
+        /* Keyframe Animations */
+        @keyframes fadeInOut { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        @keyframes gentleBob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+    </style>
+</head>
+<body class="antialiased selection:bg-gold selection:text-white">
+
+    <!-- Envelope Animation Container -->
+    <div id="envelope-container" class="fixed inset-0 z-[10000] bg-[#FFF5E4] flex flex-col items-center justify-center transition-opacity duration-1000">
+        <!-- Bismillah Preloader -->
+        <div id="loading-text" class="absolute inset-0 flex items-center justify-center z-50 transition-opacity duration-500">
+            <h1 class="bismillah-preloader font-arabic">بِسْمِ اللّٰهِ</h1>
+        </div>
+
+        <div id="envelope-wrapper" class="relative w-full max-w-2xl mx-auto h-[100dvh] flex items-center justify-center opacity-0 transition-opacity duration-500 cursor-pointer">
+            <div id="frames-container" class="relative w-full h-full flex items-center justify-center">
+                <!-- Images will be injected here via JS -->
+            </div>
+            
+            <div id="tap-instruction" class="absolute bottom-16 text-[#4F4A45]/70 font-serif tracking-widest animate-pulse pointer-events-none text-lg">
+                Tap to open
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Audio & Control -->
+    <audio id="background-audio" loop>
+        <source src="http://googleusercontent.com/file_content/1" type="audio/mpeg">
+    </audio>
+    <button id="audio-toggle" class="fixed bottom-5 right-5 z-50 bg-gold/80 text-white w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-sm cta-button transition-all duration-300">
+        <i id="audio-icon" class="fas fa-volume-off"></i>
+    </button>
+    
+    <!-- Main Content Wrapper -->
+    <div id="main-content" class="opacity-0 transition-opacity duration-1000">
+        <!-- Hero Section -->
+        <section class="hero-section min-h-screen flex flex-col items-center justify-start pt-24 p-4 sm:p-8 text-center relative">
+            <div class="z-10">
+                <h2 class="text-3xl md:text-5xl font-serif text-gold reveal font-arabic">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h2>
+                <p class="text-lg mt-2 reveal">In the Name of Allah, the Most Gracious, the Most Merciful</p>
+                <h1 class="text-4xl md:text-7xl font-serif mt-12 text-dark-text reveal" style="transition-delay: 200ms;">The Nikah of<br>Hasheema & Nahzan</h1>
+                
+                <!-- Countdown Timer -->
+                <div id="countdown" class="flex justify-center gap-2 sm:gap-4 md:gap-8 my-8 reveal" style="transition-delay: 400ms;">
+                    <div><span id="days" class="countdown-digit text-4xl md:text-6xl font-serif">00</span><p class="text-sm">Days</p></div>
+                    <div><span id="hours" class="countdown-digit text-4xl md:text-6xl font-serif">00</span><p class="text-sm">Hours</p></div>
+                    <div><span id="minutes" class="countdown-digit text-4xl md:text-6xl font-serif">00</span><p class="text-sm">Minutes</p></div>
+                    <div><span id="seconds" class="countdown-digit text-4xl md:text-6xl font-serif">00</span><p class="text-sm">Seconds</p></div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Main Card Section -->
+        <div class="px-4">
+            <main class="main-card max-w-5xl mx-auto reveal">
+                <!-- Invitation Text Section -->
+                <section class="text-center pt-8">
+                    <h3 class="text-4xl font-serif text-dark-text">Hasheema Hameed</h3>
+                    <p class="text-sm text-dark-text/70">(Granddaughter of Late A. B. Hammabba, Arkula & Late F. Abdullah, Farangipet)</p>
+                    
+                    <p class="my-4 text-2xl font-serif">&</p>
+
+                    <h3 class="text-4xl font-serif text-dark-text">Nahzan Ali</h3>
+                    <p class="text-sm text-dark-text/70">(Son of Mr. Akber Ali, Bikarnakatte Grand Son of Bawa Agrahaara)</p>
+                </section>
+                
+                <!-- Nikah & Reception Details Section -->
+                <section id="event-details" class="pt-16 text-center">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-8">
+                        <!-- Nikah Details -->
+                        <div class="reveal">
+                            <h3 class="text-4xl font-serif text-gold border-b-2 border-gold/30 pb-2 inline-block">NIKAH</h3>
+                            <div class="mt-4 text-lg space-y-2">
+                                <p><i class="fas fa-calendar-alt text-gold mr-2"></i><strong>31st July 2026</strong></p>
+                                <p><i class="fas fa-clock text-gold mr-2"></i><strong>5:00 P.M.</strong></p>
+                                <p><i class="fas fa-map-marker-alt text-gold mr-2"></i>at <strong>Al Ehsan Masjid, Bikarnakatte</strong></p>
+                            </div>
+                            <div class="mt-6 w-full h-52 rounded-2xl overflow-hidden border-2 border-gold/30 shadow-lg">
+                               <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3889.778847881097!2d74.8794828757973!3d12.85764831911964!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba35a5135a4356d%3A0xb14a1e2803360f09!2sAl-Ihsan%20Masjid!5e0!3m2!1sen!2sin!4v1715971485303!5m2!1sen!2sin" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                            </div>
+                        </div>
+
+                        <!-- Reception Details -->
+                        <div class="reveal" style="transition-delay: 200ms;">
+                            <h3 class="text-4xl font-serif text-gold border-b-2 border-gold/30 pb-2 inline-block">RECEPTION</h3>
+                            <div class="mt-4 text-lg space-y-2">
+                                <p><i class="fas fa-calendar-alt text-gold mr-2"></i><strong>1st August 2026</strong></p>
+                                <p><i class="fas fa-clock text-gold mr-2"></i><strong>After Magrib till 10:00 P.M.</strong></p>
+                                <p><i class="fas fa-map-marker-alt text-gold mr-2"></i>at <strong>MILAGRES HALL, Hampankatta, Mangalore</strong></p>
+                            </div>
+                             <div class="mt-6 w-full h-52 rounded-2xl overflow-hidden border-2 border-gold/30 shadow-lg">
+                               <iframe src="https://maps.google.com/maps?q=Milagres%20Hall,%20Hampankatta,%20Mangalore&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="text-center pt-16 pb-12">
+                    <p class="italic max-w-3xl mx-auto text-dark-text/90">
+                        May Allah bless the couple with a life filled with love, peace, and understanding.
+                        May He shower His endless mercy upon them, make this union a source of happiness and Barakah,
+                        and keep them steadfast on the path of faith and righteousness. Ameen.
+                    </p>
+                    <p class="font-arabic text-3xl text-gold mt-8">اللّٰهُمَّ بَارِكْ لَهُمَا وَبَارِكْ عَلَيْهِمَا وَاجْمَعْ بَيْنَهُمَا فِي خَيْرٍ</p>
+                    <p class="font-serif text-xl mt-12 text-dark-text">Your presence will be our greatest honour and joy.</p>
+                </section>
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="py-16 px-8 text-center relative">
+            <p class="text-gold text-3xl font-serif tracking-widest">#BismillahToForever</p>
+            <p class="mt-12 text-dark-text/70">Designed with love by <a href="#" class="text-gold hover:underline">Haashid</a></p>
+        </footer>
+
+    </div>
+    
+    <!-- Firebase SDKs and Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        
+        // --- CORE LOGIC ---
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. ENVELOPE ANIMATION & MAIN CONTENT FADE-IN ---
+            const mainContent = document.getElementById('main-content');
+            const envelopeContainer = document.getElementById('envelope-container');
+            const loadingText = document.getElementById('loading-text');
+            const envelopeWrapper = document.getElementById('envelope-wrapper');
+            const framesContainer = document.getElementById('frames-container');
+            
+            if (framesContainer) {
+                const frameCount = 9;
+                const images = [];
+                let loadedImages = 0;
+
+                const currentFrame = index => `convert_this_video_to_the__frames/convert_this_video_to_the__frames/frame_${(index + 1).toString().padStart(3, '0')}.jpg`;
+
+                for (let i = 0; i < frameCount; i++) {
+                    const img = new Image();
+                    img.src = currentFrame(i);
+                    img.className = 'absolute w-full h-full object-contain';
+                    img.style.opacity = i === 0 ? '1' : '0';
+                    framesContainer.appendChild(img);
+                    images.push(img);
+
+                    img.onload = () => {
+                        loadedImages++;
+                        if (loadedImages === frameCount) {
+                            loadingText.style.opacity = '0';
+                            setTimeout(() => loadingText.style.display = 'none', 500);
+                            envelopeWrapper.style.opacity = '1';
+
+                            const animationState = { frame: 0 };
+                            
+                            const tween = gsap.to(animationState, {
+                                frame: frameCount - 1,
+                                snap: "frame",
+                                ease: "none",
+                                duration: 1.5,
+                                paused: true,
+                                onUpdate: () => {
+                                    const currentIdx = Math.round(animationState.frame);
+                                    images.forEach((img, idx) => {
+                                        img.style.opacity = idx === currentIdx ? '1' : '0';
+                                    });
+                                },
+                                onComplete: () => {
+                                    envelopeContainer.style.opacity = '0';
+                                    setTimeout(() => {
+                                        envelopeContainer.style.display = 'none';
+                                        mainContent.style.opacity = '1';
+                                    }, 1000);
+                                }
+                            });
+
+                            envelopeWrapper.addEventListener("click", () => {
+                                document.getElementById('tap-instruction').style.opacity = '0';
+                                tween.play();
+                                
+                                const audioToggle = document.getElementById('audio-toggle');
+                                const audio = document.getElementById('background-audio');
+                                if (audio.paused) {
+                                    audioToggle.click();
+                                }
+                            }, { once: true });
+                        }
+                    };
+                }
+            } else {
+                mainContent.style.opacity = '1';
+            }
+            
+            // --- 2. COUNTDOWN TIMER ---
+            const countdownDate = new Date("July 31, 2026 17:00:00").getTime();
+            const timerInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = countdownDate - now;
+
+                if (distance < 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('countdown').innerHTML = "<p class='text-2xl font-serif text-gold'>Alhamdulillah, the day is here!</p>";
+                    return;
+                }
+
+                document.getElementById('days').innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+                document.getElementById('hours').innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+                document.getElementById('minutes').innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+                document.getElementById('seconds').innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+            }, 1000);
+
+            // --- 3. AUDIO CONTROL ---
+            const audio = document.getElementById('background-audio');
+            const audioToggle = document.getElementById('audio-toggle');
+            const audioIcon = document.getElementById('audio-icon');
+            let isPlaying = false;
+            
+            audioToggle.addEventListener('click', () => {
+                if (isPlaying) {
+                    audio.pause();
+                    audioIcon.className = 'fas fa-volume-off';
+                } else {
+                    audio.play().catch(error => console.error("Audio playback failed:", error));
+                    audioIcon.className = 'fas fa-volume-up';
+                }
+                isPlaying = !isPlaying;
+            });
+
+            // --- 4. SCROLL REVEAL ANIMATIONS ---
+            const revealElements = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                    }
+                });
+            }, { threshold: 0.1 });
+            revealElements.forEach(el => observer.observe(el));
+
+
+            // --- 5. FIREBASE SETUP FOR DU'AS ---
+            try {
+                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+                if (!firebaseConfig) {
+                    console.error("Firebase config is not available.");
+                    const duaSection = document.getElementById('dua-form')?.closest('section');
+                    if(duaSection) duaSection.style.display = 'none';
+                    return;
+                }
+
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
+                const auth = getAuth(app);
+                
+                signInAnonymously(auth).catch((error) => console.error("Anonymous sign-in failed:", error));
+
+                const duasCollectionPath = `/artifacts/${appId}/public/data/duas`;
+                const duasCollection = collection(db, duasCollectionPath);
+
+                const duaForm = document.getElementById('dua-form');
+                const successMessage = document.getElementById('form-success-message');
+
+                if(duaForm) {
+                    duaForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const name = document.getElementById('dua-name').value;
+                        const message = document.getElementById('dua-message').value;
+                        try {
+                            await addDoc(duasCollection, { name, message, timestamp: new Date() });
+                            duaForm.reset();
+                            if(successMessage) {
+                                successMessage.style.opacity = '1';
+                                setTimeout(() => {
+                                   successMessage.style.opacity = '0'; 
+                                }, 5000);
+                            }
+                        } catch (error) {
+                            console.error("Error adding document: ", error);
+                            alert("Sorry, there was an error sending your blessing.");
+                        }
+                    });
+                }
+
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                const duaSection = document.getElementById('dua-form')?.closest('section');
+                if(duaSection) duaSection.style.display = 'none';
+            }
+        });
+    </script>
+
+</body>
+</html>
