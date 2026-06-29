@@ -106,7 +106,7 @@
             background: rgba(255, 255, 255, 0.5);
             border-radius: 1.5rem;
             padding: 2rem;
-            margin-top: -8rem; /* Pulls the card up into the hero section */
+            margin-top: -2rem; /* Reduced negative margin since min-h-screen is removed */
             position: relative;
             z-index: 10;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
@@ -123,10 +123,50 @@
         #couple-svg {
             animation: gentleBob 5s ease-in-out infinite;
             filter: drop-shadow(0px 5px 10px rgba(79, 74, 69, 0.1));
-            max-width: 280px;
+            max-width: 400px;
             width: 100%;
             height: auto;
         }
+
+        /* Glare Hover Effect */
+        .glare-hover {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative Flourish Animation */
+        .flourish-path {
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            will-change: stroke-dashoffset;
+        }
+        .flourish-dot {
+            opacity: 0;
+            transform: scale(0);
+            transform-origin: center;
+        }
+        .glare-hover::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                -45deg,
+                hsla(0, 0%, 0%, 0) 60%,
+                rgba(255, 255, 255, 0.7) 70%,
+                hsla(0, 0%, 0%, 0),
+                hsla(0, 0%, 0%, 0) 100%
+            );
+            transition: 800ms ease;
+            background-size: 250% 250%, 100% 100%;
+            background-repeat: no-repeat;
+            background-position: -100% -100%, 0 0;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .glare-hover:hover::before {
+            background-position: 100% 100%, 0 0;
+        }
+
 
         /* Keyframe Animations */
         @keyframes fadeInOut { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
@@ -141,6 +181,7 @@
 
     <!-- Iridescence Background Container -->
     <div id="iridescence-container" class="fixed inset-0 w-full h-full -z-10 pointer-events-none"></div>
+    <canvas id="sparkles-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-50"></canvas>
 
     <!-- Envelope Animation Container -->
     <div id="envelope-container" class="fixed inset-0 z-[10000] bg-[#FFF5E4] flex flex-col items-center justify-center transition-opacity duration-1000">
@@ -164,11 +205,18 @@
     <!-- Main Content Wrapper -->
     <div id="main-content" class="opacity-0 transition-opacity duration-1000">
         <!-- Hero Section -->
-        <section class="hero-section min-h-screen flex flex-col items-center justify-start pt-24 p-4 sm:p-8 text-center relative">
+        <section class="hero-section flex flex-col items-center justify-start pt-56 pb-8 p-4 sm:p-8 text-center relative">
             <div class="z-10">
-                <h2 class="text-3xl md:text-5xl font-serif text-gold reveal font-arabic">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h2>
-                <p class="text-lg mt-2 reveal">In the Name of Allah, the Most Gracious, the Most Merciful</p>
-                <h1 class="text-4xl md:text-7xl font-serif mt-12 text-dark-text reveal" style="transition-delay: 200ms;">The Nikah of<br>Hasheema & Nahzan</h1>
+                <h2 id="bismillah-text" class="text-3xl md:text-5xl font-serif text-gold font-arabic" dir="rtl">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h2>
+                <p id="bismillah-translation" class="text-lg mt-2">In the Name of Allah, the Most Gracious, the Most Merciful</p>
+                <h1 id="hero-title" class="text-4xl md:text-7xl font-serif mt-12 text-dark-text">
+                    <span class="blur-word inline-block opacity-0" style="will-change: transform, filter, opacity;">The</span>
+                    <span class="blur-word inline-block opacity-0" style="will-change: transform, filter, opacity;">Nikah</span>
+                    <span class="blur-word inline-block opacity-0" style="will-change: transform, filter, opacity;">of</span><br>
+                    <span class="blur-word inline-block opacity-0" style="will-change: transform, filter, opacity;">Hasheema</span>
+                    <span class="blur-word inline-block opacity-0" style="will-change: transform, filter, opacity;">&amp;</span>
+                    <span class="blur-word inline-block opacity-0" style="will-change: transform, filter, opacity;">Nahzan</span>
+                </h1>
                 
                 <!-- Countdown Timer -->
                 <div id="countdown" class="flex justify-center gap-2 sm:gap-4 md:gap-8 my-8 reveal" style="transition-delay: 400ms;">
@@ -177,25 +225,41 @@
                     <div><span id="minutes" class="countdown-digit text-4xl md:text-6xl font-serif">00</span><p class="text-sm">Minutes</p></div>
                     <div><span id="seconds" class="countdown-digit text-4xl md:text-6xl font-serif">00</span><p class="text-sm">Seconds</p></div>
                 </div>
+                
+                <div class="flex justify-center mt-12 mb-4 reveal" style="transition-delay: 500ms;">
+                    <img src="wedding couple.webp" alt="Wedding Couple" id="couple-svg" />
+                </div>
             </div>
         </section>
         
         <!-- Main Card Section -->
         <div class="px-4">
-            <main class="main-card max-w-5xl mx-auto reveal">
+            <main class="main-card glare-hover max-w-5xl mx-auto reveal mb-12">
                 <!-- Invitation Text Section -->
-                <section class="text-center pt-8">
+                <section class="text-center py-8">
                     <h3 class="text-4xl font-serif text-dark-text">Hasheema Hameed</h3>
-                    <p class="text-sm text-dark-text/70">(Granddaughter of Late A. B. Hammabba, Arkula & Late F. Abdullah, Farangipet)</p>
+                    <p class="text-sm text-dark-text/70 mt-2 px-4">(Grand D/o Marhoom A. B. Hammabba, Arkula &amp; Marhoom F. Abdullah, Farangipet)</p>
                     
-                    <p class="my-4 text-2xl font-serif">&</p>
+                    <div class="my-8 flex justify-center items-center gap-4 reveal">
+                        <svg width="60" height="20" viewBox="0 0 60 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="flourish-svg">
+                            <path class="flourish-path" d="M5,10 Q25,20 40,10 T55,10" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"/>
+                            <circle class="flourish-dot" cx="55" cy="10" r="2" fill="#D4AF37"/>
+                        </svg>
+                        <span class="text-2xl font-serif text-gold italic">with</span>
+                        <svg width="60" height="20" viewBox="0 0 60 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="flourish-svg" style="transform: scaleX(-1);">
+                            <path class="flourish-path" d="M5,10 Q25,20 40,10 T55,10" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"/>
+                            <circle class="flourish-dot" cx="55" cy="10" r="2" fill="#D4AF37"/>
+                        </svg>
+                    </div>
 
                     <h3 class="text-4xl font-serif text-dark-text">Nahzan Ali</h3>
-                    <p class="text-sm text-dark-text/70">(Son of Mr. Akber Ali, Bikarnakatte Grand Son of Bawa Agrahaara)</p>
+                    <p class="text-sm text-dark-text/70 mt-2 px-4">(S/o Mr. Akbar Ali, Bikarnakatte, Grand S/o Marhoom P. B. Abdul Khader, Katipalla &amp; Marhoom Haji N Ahmed Bawa, Agrahara, Bantwal)</p>
                 </section>
-                
+            </main>
+
+            <main class="main-card glare-hover max-w-5xl mx-auto reveal mb-12">
                 <!-- Nikah & Reception Details Section -->
-                <section id="event-details" class="pt-16 text-center">
+                <section id="event-details" class="py-8 text-center">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-8">
                         <!-- Nikah Details -->
                         <div class="reveal">
@@ -311,6 +375,31 @@
                                             setTimeout(() => {
                                                 envelopeContainer.style.display = 'none';
                                                 mainContent.style.opacity = '1';
+                                                
+                                                // Trigger SplitText animations
+                                                gsap.to('#bismillah-text .split-word', {
+                                                    opacity: 1,
+                                                    y: 0,
+                                                    duration: 0.8,
+                                                    ease: "power3.out",
+                                                    stagger: 0.15
+                                                });
+                                                
+                                                gsap.to('#bismillah-translation .split-word', {
+                                                    opacity: 1,
+                                                    y: 0,
+                                                    duration: 0.8,
+                                                    ease: "power3.out",
+                                                    stagger: 0.05,
+                                                    delay: 0.5
+                                                });
+                                                
+                                                // Trigger BlurText animation
+                                                gsap.fromTo('.blur-word', 
+                                                    { filter: 'blur(10px)', opacity: 0, y: -50 },
+                                                    { filter: 'blur(0px)', opacity: 1, y: 0, duration: 0.8, ease: "power3.out", stagger: 0.15, delay: 0.8 }
+                                                );
+                                                
                                             }, 800);
                                         }
                                     });
@@ -326,7 +415,47 @@
                 }
             } else {
                 mainContent.style.opacity = '1';
+                
+                // If envelope is skipped, still play the animation
+                setTimeout(() => {
+                    gsap.to('#bismillah-text .split-word', { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", stagger: 0.15 });
+                    gsap.to('#bismillah-translation .split-word', { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", stagger: 0.05, delay: 0.5 });
+                    
+                    gsap.fromTo('.blur-word', 
+                        { filter: 'blur(10px)', opacity: 0, y: -50 },
+                        { filter: 'blur(0px)', opacity: 1, y: 0, duration: 0.8, ease: "power3.out", stagger: 0.15, delay: 0.8 }
+                    );
+                }, 500);
             }
+            
+            // --- SPLIT TEXT UTILITY ---
+            function splitTextForAnimation(selector) {
+                const el = document.querySelector(selector);
+                if (!el) return;
+                const text = el.innerText;
+                el.innerHTML = '';
+                
+                // Split by words
+                const words = text.split(' ');
+                words.forEach((word, i) => {
+                    const span = document.createElement('span');
+                    span.className = 'split-word';
+                    span.style.display = 'inline-block';
+                    span.style.opacity = '0';
+                    span.style.transform = 'translateY(40px)';
+                    span.style.willChange = 'transform, opacity';
+                    span.innerText = word;
+                    el.appendChild(span);
+                    
+                    if (i < words.length - 1) {
+                        el.appendChild(document.createTextNode(' '));
+                    }
+                });
+            }
+
+            splitTextForAnimation('#bismillah-text');
+            splitTextForAnimation('#bismillah-translation');
+            
             
             // --- 2. COUNTDOWN TIMER ---
             const countdownDate = new Date("July 31, 2026 17:00:00").getTime();
@@ -356,6 +485,93 @@
                 });
             }, { threshold: 0.1 });
             revealElements.forEach(el => observer.observe(el));
+
+            // --- 5. INTERACTIVE PREMIUM EFFECTS ---
+            // 5a. 3D Card Tilt
+            document.querySelectorAll('.main-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -4; // Subtle tilt (4deg)
+                    const rotateY = ((x - centerX) / centerX) * 4;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                    card.style.transition = 'transform 0.1s ease-out';
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
+                    card.style.transition = 'transform 0.5s ease-out';
+                });
+            });
+
+            // 5b. Ambient Sparkles Canvas
+            const sparkCanvas = document.getElementById('sparkles-canvas');
+            if (sparkCanvas) {
+                const sparkCtx = sparkCanvas.getContext('2d');
+                const resizeCanvas = () => {
+                    sparkCanvas.width = window.innerWidth;
+                    sparkCanvas.height = window.innerHeight;
+                };
+                window.addEventListener('resize', resizeCanvas);
+                resizeCanvas();
+
+                const particles = Array.from({length: 40}, () => ({
+                    x: Math.random() * sparkCanvas.width,
+                    y: Math.random() * sparkCanvas.height,
+                    r: Math.random() * 1.5 + 0.5,
+                    dx: Math.random() * 0.4 - 0.2,
+                    dy: Math.random() * -0.5 - 0.2,
+                    opacity: Math.random(),
+                    pulse: Math.random() * 0.02 + 0.01
+                }));
+
+                function animateSparkles() {
+                    sparkCtx.clearRect(0, 0, sparkCanvas.width, sparkCanvas.height);
+                    particles.forEach(p => {
+                        sparkCtx.beginPath();
+                        sparkCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                        sparkCtx.fillStyle = `rgba(212, 175, 55, ${p.opacity})`;
+                        sparkCtx.fill();
+                        p.x += p.dx;
+                        p.y += p.dy;
+                        if (p.y < 0) p.y = sparkCanvas.height;
+                        if (p.x < 0) p.x = sparkCanvas.width;
+                        if (p.x > sparkCanvas.width) p.x = 0;
+                        p.opacity += p.pulse;
+                        if (p.opacity > 1 || p.opacity < 0.1) p.pulse *= -1;
+                    });
+                    requestAnimationFrame(animateSparkles);
+                }
+                animateSparkles();
+            }
+
+            // 5c. SVG Flourish Animations with GSAP ScrollTrigger
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+                gsap.to('.flourish-path', {
+                    strokeDashoffset: 0,
+                    duration: 2,
+                    ease: "power2.inOut",
+                    scrollTrigger: {
+                        trigger: '.flourish-svg',
+                        start: "top 90%"
+                    }
+                });
+                gsap.to('.flourish-dot', {
+                    scale: 1,
+                    opacity: 1,
+                    duration: 0.5,
+                    ease: "back.out(2)",
+                    stagger: 0.2,
+                    scrollTrigger: {
+                        trigger: '.flourish-svg',
+                        start: "top 90%"
+                    },
+                    delay: 1.5
+                });
+            }
 
 
             // --- 5. FIREBASE SETUP FOR DU'AS ---
